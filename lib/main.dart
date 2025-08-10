@@ -1,4 +1,5 @@
 import 'package:coffe_app_ui/screens/splas_screen.dart';
+import 'package:coffe_app_ui/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,9 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: MyColors.myTheme,
       home: SplashScreen(),
     );
   }
