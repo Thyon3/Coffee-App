@@ -31,10 +31,17 @@ class DrinkDetailScreen extends ConsumerWidget {
             spacing: 8,
             children: [
               for (final s in drink.availableSizes)
-                ChoiceChip(
-                  label: Text(_labelForSize(s.type)),
-                  selected: state.selectedSize.type == s.type,
-                  onSelected: (_) => ref.read(drinkDetailProvider(drink).notifier).selectSize(s),
+                Tooltip(
+                  message: 'Select size ${_labelForSize(s.type)}',
+                  child: Semantics(
+                    button: true,
+                    label: 'Select size ${_labelForSize(s.type)}',
+                    child: ChoiceChip(
+                      label: Text(_labelForSize(s.type)),
+                      selected: state.selectedSize.type == s.type,
+                      onSelected: (_) => ref.read(drinkDetailProvider(drink).notifier).selectSize(s),
+                    ),
+                  ),
                 ),
             ],
           ),
