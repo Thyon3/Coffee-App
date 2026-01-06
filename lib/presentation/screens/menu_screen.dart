@@ -12,8 +12,19 @@ class MenuScreen extends ConsumerWidget {
     final categoriesAsync = ref.watch(menuCategoriesProvider);
     final drinksAsync = ref.watch(filteredDrinksProvider);
 
+    final isGrid = ref.watch(isGridLayoutProvider.select((v) => v));
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Menu')),
+      appBar: AppBar(
+        title: const Text('Menu'),
+        actions: [
+          IconButton(
+            tooltip: isGrid ? 'Switch to list' : 'Switch to grid',
+            icon: Icon(isGrid ? Icons.view_list : Icons.grid_view),
+            onPressed: () => ref.read(isGridLayoutProvider.notifier).state = !isGrid,
+          ),
+        ],
+      ),
       body: Column(
         children: [
           SizedBox(
@@ -41,17 +52,24 @@ class MenuScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Expanded(
             child: drinksAsync.when(
-              data: (items) => GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  childAspectRatio: 0.75,
-                ),
-                padding: const EdgeInsets.all(12),
-                itemCount: items.length,
-                itemBuilder: (context, index) => DrinkCard(drink: items[index]),
-              ),
+              data: (items) => isGrid
+                  ? GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 0.75,
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      itemCount: items.length,
+                      itemBuilder: (context, index) => FadeIn(delayMs: (index % 8) * 40, child: DrinkCard(drink: items[index], isGrid: true)), 
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(12),
+                      itemBuilder: (context, index) => DrinkCard(drink: items[index], isGrid: false),
+                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      itemCount: items.length,
+                    ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (_, __) => const SizedBox.shrink(),
             ),
