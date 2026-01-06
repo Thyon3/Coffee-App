@@ -67,3 +67,9 @@ final ordersProvider = StateNotifierProvider<OrdersNotifier, List<Order>>((ref) 
   final storage = ref.watch(ordersStorageProvider);
   return OrdersNotifier(storage);
 });
+
+// Ready provider for applying AsyncLoader/Error in UI without changing orders state shape
+final ordersReadyProvider = FutureProvider<void>((ref) async {
+  final storage = ref.read(ordersStorageProvider);
+  await storage.load();
+});
