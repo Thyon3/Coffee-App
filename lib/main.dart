@@ -2,20 +2,23 @@ import 'package:coffe_app_ui/screens/splas_screen.dart';
 import 'package:coffe_app_ui/utils/colors.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:coffe_app_ui/presentation/routes/app_router.dart';
+import 'package:coffe_app_ui/presentation/theme/colors.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: MyColors.myTheme,
-      home: SplashScreen(),
+    return MaterialApp.router(
+      title: 'Coffee App',
+      theme: AppColors.theme,
+      routerConfig: appRouter,
     );
   }
 }
