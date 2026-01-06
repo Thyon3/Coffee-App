@@ -73,3 +73,9 @@ final cartTotalProvider = Provider<double>((ref) {
   final pricing = ref.watch(cartPricingProvider);
   return pricing.cartTotal(items);
 });
+
+// Ready provider for applying AsyncLoader/Error in UI without changing cart state shape
+final cartReadyProvider = FutureProvider<void>((ref) async {
+  final storage = ref.read(cartStorageProvider);
+  await storage.load();
+});
