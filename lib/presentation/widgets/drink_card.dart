@@ -78,7 +78,14 @@ class DrinkCard extends StatelessWidget {
             Expanded(child: details),
           ]);
 
-    return InkWell(onTap: onTap, child: content);
+    return Tooltip(
+      message: 'View details for ${drink.name}',
+      child: Semantics(
+        label: 'Drink card for ${drink.name}, price ${drink.basePrice.amount.toStringAsFixed(2)} dollars',
+        button: true,
+        child: InkWell(onTap: onTap, child: content),
+      ),
+    );
   }
 
   Widget _buildImage(String source, BuildContext context) {
