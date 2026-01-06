@@ -8,13 +8,17 @@ class OrderHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ready = ref.watch(ordersReadyProvider);
     final orders = ref.watch(ordersProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Orders')),
-      body: orders.isEmpty
-          ? const Center(child: Text('No orders yet'))
-          : ListView.separated(
+      body: ready.when(
+        loading: () => const AsyncLoader(),
+        error: (e, _) => const AsyncErrorView(message: 'Failed to load orders'),
+        data: (_) => orders.isEmpty
+            ? const Center(child: Text('No orders yet'))
+            : ListView.separated(
               padding: const EdgeInsets.all(12),
               itemCount: orders.length,
               separatorBuilder: (_, __) => const SizedBox(height: 8),

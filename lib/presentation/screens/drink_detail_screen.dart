@@ -51,10 +51,17 @@ class DrinkDetailScreen extends ConsumerWidget {
             spacing: 8,
             children: [
               for (final e in extras)
-                FilterChip(
-                  label: Text("${e.name} (+\\$${e.price.amount.toStringAsFixed(2)})"),
-                  selected: state.selectedExtraIds.contains(e.id),
-                  onSelected: (_) => ref.read(drinkDetailProvider(drink).notifier).toggleExtra(e.id),
+                Tooltip(
+                  message: 'Toggle extra ${e.name}',
+                  child: Semantics(
+                    button: true,
+                    label: 'Toggle extra ${e.name}',
+                    child: FilterChip(
+                      label: Text("${e.name} (+\\$${e.price.amount.toStringAsFixed(2)})"),
+                      selected: state.selectedExtraIds.contains(e.id),
+                      onSelected: (_) => ref.read(drinkDetailProvider(drink).notifier).toggleExtra(e.id),
+                    ),
+                  ),
                 ),
             ],
           ),

@@ -18,10 +18,14 @@ class MenuScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Menu'),
         actions: [
-          IconButton(
-            tooltip: isGrid ? 'Switch to list' : 'Switch to grid',
-            icon: Icon(isGrid ? Icons.view_list : Icons.grid_view),
-            onPressed: () => ref.read(isGridLayoutProvider.notifier).state = !isGrid,
+          AnimatedSwitcher(
+            duration: Duration(milliseconds: (ref.watch(userPrefsProvider).value?.reduceMotion ?? false) ? 0 : 200),
+            child: IconButton(
+              key: ValueKey(isGrid),
+              tooltip: isGrid ? 'Switch to list' : 'Switch to grid',
+              icon: Icon(isGrid ? Icons.view_list : Icons.grid_view),
+              onPressed: () => ref.read(isGridLayoutProvider.notifier).state = !isGrid,
+            ),
           ),
         ],
       ),

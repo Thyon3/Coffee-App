@@ -45,6 +45,9 @@ dependencies:
   # Routing
   go_router: ^13.0.0
 
+  # Local storage
+  shared_preferences: ^2.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

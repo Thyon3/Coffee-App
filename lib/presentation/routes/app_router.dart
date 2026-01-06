@@ -6,6 +6,7 @@ import 'package:coffe_app_ui/presentation/screens/details_screen.dart';
 import 'package:coffe_app_ui/presentation/screens/favorites_screen.dart';
 import 'package:coffe_app_ui/presentation/screens/cart_screen.dart';
 import 'package:coffe_app_ui/presentation/screens/notifications_screen.dart';
+import 'package:coffe_app_ui/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String favorites = '/favorites';
   static const String cart = '/cart';
   static const String notifications = '/notifications';
+  static const String profile = '/profile';
 }
 
 /// Global router configuration using go_router
@@ -61,6 +63,11 @@ final appRouter = GoRouter(
       path: AppRoutes.notifications,
       name: 'notifications',
       builder: (context, state) => const NotificationsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.profile,
+      name: 'profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
   ],
   errorBuilder: (context, state) => Scaffold(
