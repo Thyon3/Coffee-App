@@ -119,7 +119,7 @@ class HomeScreen extends ConsumerWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
                       child: Image.asset(
-                        'images/download (1).jpg',
+                        'assets/images/download (1).jpg',
                         height: MediaQuery.sizeOf(context).height * 0.2,
                         width: MediaQuery.sizeOf(context).width * 0.7,
                       ),
