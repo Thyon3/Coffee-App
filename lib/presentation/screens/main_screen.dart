@@ -18,6 +18,16 @@ class MainScreen extends ConsumerWidget {
     final index = ref.watch(bottomNavIndexProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Coffee App'),
+        actions: [
+          IconButton(
+            tooltip: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => context.push('/profile'),
+          ),
+        ],
+      ),
       body: _destinations[index],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
