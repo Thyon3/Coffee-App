@@ -66,7 +66,7 @@ class MenuScreen extends ConsumerWidget {
                     )
                   : ListView.separated(
                       padding: const EdgeInsets.all(12),
-                      itemBuilder: (context, index) => DrinkCard(drink: items[index], isGrid: false),
+                      itemBuilder: (context, index) => FadeIn(delayMs: (index % 8) * 40, child: DrinkCard(drink: items[index], isGrid: false)), 
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemCount: items.length,
                     ),

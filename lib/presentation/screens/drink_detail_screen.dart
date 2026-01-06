@@ -21,7 +21,7 @@ class DrinkDetailScreen extends ConsumerWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: _image(drink.image),
+            child: Semantics(label: 'Image of ${drink.name}', child: _image(drink.image)), 
           ),
           const SizedBox(height: 16),
           Text(drink.description, style: const TextStyle(fontSize: 16)),
