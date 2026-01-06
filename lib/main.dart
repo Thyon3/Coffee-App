@@ -1,5 +1,3 @@
-import 'package:coffe_app_ui/screens/splas_screen.dart';
-import 'package:coffe_app_ui/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
