@@ -16,7 +16,7 @@ class SplashScreen extends StatelessWidget {
           children: [
             Positioned.fill(
               child: Image.asset(
-                'images/splash_screen.png',
+                'assets/images/splash_screen.png',
                 fit: BoxFit.cover,
                 height: size.height * 0.6,
               ),
