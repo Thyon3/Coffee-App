@@ -2,20 +2,115 @@ import 'dart:collection';
 
 import 'package:coffe_app_ui/models/coffee.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:readmore_flutter/readmore_flutter.dart';
+import 'package:coffe_app_ui/provider/cart_provider.dart';
+import 'package:coffe_app_ui/provider/favorites_provider.dart';
+import 'package:coffe_app_ui/provider/auth_provider.dart';
+import 'package:coffe_app_ui/domain/entities/cart_item.dart';
+import 'package:coffe_app_ui/domain/entities/coffee_entity.dart';
+import 'package:coffe_app_ui/domain/value_objects/drink_size.dart';
+import 'package:coffe_app_ui/domain/value_objects/price.dart';
+import 'package:coffe_app_ui/screens/cart_screen.dart';
 
-class DetailsScreen extends StatefulWidget {
+class DetailsScreen extends ConsumerStatefulWidget {
   const DetailsScreen({super.key, required this.coffe});
 
   @override
-  State<DetailsScreen> createState() => _DetailsScreenState();
+  ConsumerState<DetailsScreen> createState() => _DetailsScreenState();
   final Coffee coffe;
 }
 
-class _DetailsScreenState extends State<DetailsScreen> {
+class _DetailsScreenState extends ConsumerState<DetailsScreen> {
   List<String> size = ['L', 'M', 'A'];
   int currentIndex = 0;
+  int quantity = 1;
+
+  DrinkSize getSelectedSize() {
+    switch (size[currentIndex]) {
+      case 'S':
+        return const DrinkSize.small();
+      case 'M':
+        return const DrinkSize.medium();
+      case 'L':
+        return const DrinkSize.large();
+      default:
+        return const DrinkSize.medium();
+    }
+  }
+
+  void addToCart() {
+    final coffeeEntity = CoffeeEntity(
+      id: widget.coffe.slung,
+      name: widget.coffe.name,
+      description: widget.coffe.description,
+      image: widget.coffe.image,
+      basePrice: Price(amount: widget.coffe.price),
+    );
+
+    final cartItem = CartItem.fromSelection(
+      drink: coffeeEntity,
+      size: getSelectedSize(),
+      extras: [], // No extras for now
+      quantity: quantity,
+    );
+
+    ref.read(cartNotifierProvider.notifier).addItem(cartItem);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${widget.coffe.name} added to cart!'),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'View Cart',
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const CartScreen(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _toggleFavorite() async {
+    final user = ref.read(userProvider);
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please login to add favorites'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    try {
+      final isNowFavorite = await ref.read(favoritesNotifierProvider.notifier)
+          .toggleFavorite(user.id, widget.coffe.slung);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isNowFavorite 
+                ? '${widget.coffe.name} added to favorites!'
+                : '${widget.coffe.name} removed from favorites',
+          ),
+          backgroundColor: isNowFavorite ? Colors.green : Colors.grey,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,8 +139,23 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.heart_broken, size: 25),
+                    onPressed: () => _toggleFavorite(),
+                    icon: Consumer(
+                      builder: (context, ref, child) {
+                        final user = ref.watch(userProvider);
+                        final isFavorite = ref.watch(isFavoriteProvider(widget.coffe.slung));
+                        
+                        if (user == null) {
+                          return const Icon(Icons.heart_broken, size: 25);
+                        }
+                        
+                        return Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          size: 25,
+                          color: isFavorite ? Colors.red : null,
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -300,6 +410,73 @@ class _DetailsScreenState extends State<DetailsScreen> {
               ),
             ),
             SizedBox(height: 50),
+            
+            // Quantity Selector
+            Text(
+              'Quantity',
+              style: GoogleFonts.bricolageGrotesque(
+                textStyle: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (quantity > 1) quantity--;
+                      });
+                    },
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.remove, size: 20),
+                    ),
+                  ),
+                  Container(
+                    width: 60,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$quantity',
+                        style: GoogleFonts.lato(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        quantity++;
+                      });
+                    },
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.add, size: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 30),
           ],
         ),
       ),
@@ -328,22 +505,32 @@ class _DetailsScreenState extends State<DetailsScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Price Text
-            Text(
-              "\$4.99",
-              style: GoogleFonts.bungee(
-                textStyle: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Total",
+                  style: GoogleFonts.lato(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
+                Text(
+                  "\$${(widget.coffe.price * quantity).toStringAsFixed(2)}",
+                  style: GoogleFonts.bungee(
+                    textStyle: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             // Buy Button
             ElevatedButton(
-              onPressed: () {
-                // Your purchase action
-              },
+              onPressed: addToCart,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 padding: EdgeInsets.symmetric(
@@ -360,7 +547,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 ),
               ),
               child: const Text(
-                "Buy Now",
+                "Add to Cart",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
