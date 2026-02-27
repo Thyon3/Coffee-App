@@ -1,49 +1,61 @@
 import 'package:equatable/equatable.dart';
+import 'package:coffe_app_ui/domain/entities/drink.dart';
+import 'package:coffe_app_ui/domain/value_objects/price.dart';
+import 'package:coffe_app_ui/domain/value_objects/drink_size.dart';
 
 /// Domain entity representing a Coffee item
 /// This is the core business object independent of any framework or UI
-class CoffeeEntity extends Equatable {
+class CoffeeEntity extends Drink {
   const CoffeeEntity({
-    required this.name,
-    required this.price,
-    required this.image,
-    required this.rating,
-    required this.type,
-    required this.description,
+    required this.id,
+    required super.name,
+    required super.description,
+    required super.image,
+    required super.basePrice,
+    this.rating = 0.0,
+    this.type = 'Coffee',
+    super.availableSizes = const [
+      DrinkSize.small(),
+      DrinkSize.medium(),
+      DrinkSize.large(),
+    ],
   });
 
-  final String name;
-  final double price;
-  final String image;
+  final String id;
   final double rating;
   final String type;
-  final String description;
 
   @override
   List<Object?> get props => [
+        id,
         name,
-        price,
+        basePrice,
         image,
         rating,
         type,
         description,
+        availableSizes,
       ];
 
   CoffeeEntity copyWith({
+    String? id,
     String? name,
-    double? price,
+    Price? basePrice,
     String? image,
     double? rating,
     String? type,
     String? description,
+    List<DrinkSize>? availableSizes,
   }) {
     return CoffeeEntity(
+      id: id ?? this.id,
       name: name ?? this.name,
-      price: price ?? this.price,
+      description: description ?? this.description,
       image: image ?? this.image,
+      basePrice: basePrice ?? this.basePrice,
       rating: rating ?? this.rating,
       type: type ?? this.type,
-      description: description ?? this.description,
+      availableSizes: availableSizes ?? this.availableSizes,
     );
   }
 }
